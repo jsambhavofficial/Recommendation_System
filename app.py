@@ -33,18 +33,20 @@ def recommend():
         return jsonify({"status": "greeting", "message": conv_response})
         
     # 2. Get recommendations
-    results, path = recommend_courses(query)
+    results = recommend_courses(query)
     
     # 3. Handle empty results
-    if not results and not path:
+    if not results:
         return jsonify({"status": "off_topic", "message": "No relevant courses found."})
         
-    # Convert learning path format
-    json_path = {}
-    if path:
-        for skill, df in path.items():
-            json_path[skill] = df_to_json(df)
-            
+    # Helper to convert domain path dict to JSON
+    def get_json_path(domain_data):
+        json_path = {}
+        if "path" in domain_data:
+            for skill, df in domain_data["path"].items():
+                json_path[skill] = df_to_json(df)
+        return json_path
+
     # 4. Handle multiple domains (Comparison mode triggered inside chat)
     if len(results) > 1:
         domains = list(results.keys())
@@ -53,14 +55,14 @@ def recommend():
         
         path_a = {
             "domain": query_a,
-            "recommendations": df_to_json(results[query_a]),
-            "learning_path": json_path # Add the learning path
+            "recommendations": df_to_json(results[query_a]["recommendations"]),
+            "learning_path": get_json_path(results[query_a])
         }
         
         path_b = {
             "domain": query_b,
-            "recommendations": df_to_json(results[query_b]),
-            "learning_path": {}
+            "recommendations": df_to_json(results[query_b]["recommendations"]),
+            "learning_path": get_json_path(results[query_b])
         }
         
         return jsonify({
@@ -72,12 +74,13 @@ def recommend():
         })
         
     # 5. Handle single domain
-    domain_name = list(results.keys())[0] if results else ""
+    domain_name = list(results.keys())[0]
+    domain_data = results[domain_name]
     return jsonify({
         "status": "success",
         "domain": domain_name,
-        "recommendations": df_to_json(results[domain_name]) if domain_name in results else [],
-        "learning_path": json_path
+        "recommendations": df_to_json(domain_data["recommendations"]),
+        "learning_path": get_json_path(domain_data)
     })
 
 

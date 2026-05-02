@@ -181,6 +181,7 @@ def recommend_courses(user_query):
     certificate = extract_certificate(user_query)
 
     final_results = {}
+    level_order = {'beginner': 1, 'all levels': 2, 'intermediate': 3, 'advanced': 4}
 
     # RECOMMEND PER EXPLICIT SKILL (Creates a "PYTHON" or "JAVA" section)
     for skill in detected_skills:
@@ -201,14 +202,13 @@ def recommend_courses(user_query):
             temp_df = temp_df.sort_values(by=['sim', 'Rating'], ascending=[False, False])
             temp_df = temp_df.drop_duplicates(subset=['Course_Name'])
             
-            final_results[skill.upper()] = temp_df.head(3)[['Course_Name', 'Organization', 'Rating', 'Level']]
+            final_results[skill.upper()] = {
+                "recommendations": temp_df.head(3)[['Course_Name', 'Organization', 'Rating', 'Level']],
+                "path": {}
+            }
 
     # RECOMMEND PER ML DOMAIN
     for domain in domains:
-        # Skip ML domains if explicit skills were found, UNLESS the domain was explicitly typed
-        if detected_skills and domain.lower() not in user_query:
-            continue
-            
         if domain.upper() in final_results:
             continue
             
@@ -232,39 +232,37 @@ def recommend_courses(user_query):
         temp_df = temp_df.sort_values(by=['sim', 'Rating'], ascending=[False, False])
         temp_df = temp_df.drop_duplicates(subset=['Course_Name'])
 
-        final_results[domain.upper()] = temp_df.head(3)[
-            ['Course_Name', 'Organization', 'Rating', 'Level']
-        ]
+        final_results[domain.upper()] = {
+            "recommendations": temp_df.head(3)[['Course_Name', 'Organization', 'Rating', 'Level']],
+            "path": {}
+        }
 
     # LEARNING PATH
-    path_courses = {}
-    
-    # Generate the learning path if the domain exists in our dictionary
-    all_selected_courses = pd.concat(final_results.values()) if final_results else pd.DataFrame()
+    all_recs = [data["recommendations"] for data in final_results.values()]
+    all_selected_courses = pd.concat(all_recs) if all_recs else pd.DataFrame()
     selected_names = set(all_selected_courses['Course_Name']) if not all_selected_courses.empty else set()
 
-    # Only generate paths for the specific sections we are actually recommending!
     for section in final_results.keys():
         section_lower = section.lower()
         if section_lower in learning_paths:
             for skill in learning_paths[section_lower]:
-
                 skill_df = df[df['text'].str.contains(skill)]
-
                 if not skill_df.empty:
                     skill_df = skill_df[~skill_df['Course_Name'].isin(selected_names)]
-
                     skill_df = skill_df.drop_duplicates(subset=['Course_Name'])
-                    path_courses[skill] = skill_df.sort_values(
-                        by='Rating', ascending=False
-                    ).head(2)[['Course_Name', 'Rating']]
+                    
+                    # Sort by Level (Beginner to Advanced) -> Rating
+                    skill_df['level_rank'] = skill_df['Level'].str.lower().map(level_order).fillna(5)
+                    sorted_skill_df = skill_df.sort_values(by=['level_rank', 'Rating'], ascending=[True, False])
+                    
+                    final_results[section]["path"][skill] = sorted_skill_df.head(2)[['Course_Name', 'Rating', 'Level']]
 
-    return final_results, path_courses
+    return final_results
 
 
 if __name__ == "__main__":
     # TEST
-    query = "hii"
+    query = "i want to learn ai and cybersecurity"
 
     print(f"\nUser: {query}")
 
@@ -273,15 +271,15 @@ if __name__ == "__main__":
     if conversational_response:
         print(f"Bot: {conversational_response}")
     else:
-        results, path = recommend_courses(query)
+        results = recommend_courses(query)
 
-        print("\n========== COURSE RECOMMENDATIONS ==========")
-        for domain, courses in results.items():
-            print(f"\n=== {domain.upper()} ===")
-            print(courses)
+        for domain, data in results.items():
+            print(f"\n========== COURSE RECOMMENDATIONS ==========")
+            print(f"=== {domain.upper()} ===")
+            print(data["recommendations"])
 
-        if path:
-            print("\n========== LEARNING PATH ==========")
-            for skill, courses in path.items():
-                print(f"\n{skill.upper()}:")
-                print(courses)
+            if data["path"]:
+                print("\n========== LEARNING PATH ==========")
+                for skill, courses in data["path"].items():
+                    print(f"\n{skill.upper()}:")
+                    print(courses)
