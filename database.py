@@ -3,7 +3,12 @@ import os
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'coursebot.db')
+DB_PATH = os.getenv('DATABASE_PATH')
+if not DB_PATH:
+    # Vercel serverless functions can only write safely to /tmp. Locally, keep the
+    # database beside the app files so the existing workflow still feels familiar.
+    base_dir = '/tmp' if os.getenv('VERCEL') else os.path.dirname(os.path.abspath(__file__))
+    DB_PATH = os.path.join(base_dir, 'coursebot.db')
 
 
 def get_db():

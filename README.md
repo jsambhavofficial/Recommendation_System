@@ -22,12 +22,27 @@ To run this project, you need to have Python installed. The required Python pack
 - `scikit-learn` (Machine learning algorithms)
 - `pyspellchecker` (Spelling correction for queries)
 - `python-dotenv` (Environment variable management)
-- `google-generativeai` (Google Gemini API wrapper)
+- `google-genai` (Google Gemini API wrapper)
 
 You can install all of them using a single command:
 ```bash
-pip install flask pandas numpy scikit-learn pyspellchecker python-dotenv google-generativeai
+pip install flask pandas numpy scikit-learn pyspellchecker python-dotenv google-genai
 ```
+
+## Vercel Deployment
+
+This project is configured for Vercel's Python serverless runtime.
+
+1. Push this repository to GitHub.
+2. Import the repository in Vercel.
+3. Add these environment variables in Vercel Project Settings:
+```env
+GEMINI_API_KEY=your_api_key_here
+SECRET_KEY=use_a_long_random_secret
+```
+4. Deploy. Vercel will use `vercel.json` and `requirements.txt`.
+
+Note: SQLite on Vercel is temporary because serverless storage is ephemeral. Login and chat history may reset between function instances. For production persistence, use an external database such as Neon Postgres, Supabase, or Turso.
 
 ## ⚙️ Installation & Setup
 
@@ -50,7 +65,7 @@ source venv/bin/activate
 
 ### 3. Install Required Dependencies
 ```bash
-pip install flask pandas numpy scikit-learn pyspellchecker python-dotenv google-generativeai
+pip install flask pandas numpy scikit-learn pyspellchecker python-dotenv google-genai
 ```
 
 ### 4. Configure Environment Variables
