@@ -14,7 +14,7 @@ An intelligent web application that provides personalized course recommendations
 
 ## 📦 Dependencies
 
-To run this project, you need to have Python installed. The required Python packages are:
+To run this project, you need to have Python installed. The required Python packages are :
 
 - `flask` (Web framework)
 - `pandas` (Data processing)
