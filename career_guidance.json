@@ -1,0 +1,272 @@
+{
+    "data science": {
+        "roles": [
+            "Data Analyst",
+            "Data Scientist",
+            "Data Engineer",
+            "BI Analyst"
+        ],
+        "avg_salary": "$80k - $130k+",
+        "tip": "Build a strong portfolio. Showcase real-world data projects on GitHub using Python, Pandas, and SQL."
+    },
+    "machine learning": {
+        "roles": [
+            "Machine Learning Engineer",
+            "AI Researcher",
+            "NLP Scientist",
+            "Data Scientist"
+        ],
+        "avg_salary": "$110k - $160k+",
+        "tip": "Master the math (Linear Algebra/Calculus) behind the algorithms, and get comfortable with PyTorch or TensorFlow."
+    },
+    "cybersecurity": {
+        "roles": [
+            "Security Analyst",
+            "Penetration Tester",
+            "Security Architect",
+            "SOC Analyst"
+        ],
+        "avg_salary": "$90k - $140k+",
+        "tip": "Start with certifications like CompTIA Security+ or CEH to get your foot in the door."
+    },
+    "cloud computing": {
+        "roles": [
+            "Cloud Architect",
+            "Cloud Engineer",
+            "SysOps Administrator",
+            "Solutions Architect"
+        ],
+        "avg_salary": "$100k - $150k+",
+        "tip": "Hands-on experience is key. Get a foundational certification from AWS, Azure, or Google Cloud."
+    },
+    "mobile development": {
+        "roles": [
+            "iOS Developer",
+            "Android Developer",
+            "Mobile App Developer",
+            "React Native Developer"
+        ],
+        "avg_salary": "$90k - $130k+",
+        "tip": "Publish at least one fully functioning app to the Apple App Store or Google Play Store."
+    },
+    "devops": {
+        "roles": [
+            "DevOps Engineer",
+            "Site Reliability Engineer (SRE)",
+            "Release Manager",
+            "Automation Architect"
+        ],
+        "avg_salary": "$110k - $145k+",
+        "tip": "Master CI/CD pipelines, Docker, Kubernetes, and Infrastructure as Code (Terraform)."
+    },
+    "database": {
+        "roles": [
+            "Database Administrator (DBA)",
+            "Data Engineer",
+            "SQL Developer",
+            "Data Architect"
+        ],
+        "avg_salary": "$85k - $125k+",
+        "tip": "Go beyond standard SQL—learn database optimization, indexing, and NoSQL solutions."
+    },
+    "artificial intelligence": {
+        "roles": [
+            "AI Engineer",
+            "Computer Vision Engineer",
+            "Research Scientist",
+            "Prompt Engineer"
+        ],
+        "avg_salary": "$120k - $170k+",
+        "tip": "Keep up with the latest research papers and build projects using Large Language Models."
+    },
+    "business & management": {
+        "roles": [
+            "Project Manager",
+            "Business Analyst",
+            "Operations Manager",
+            "Product Manager"
+        ],
+        "avg_salary": "$75k - $130k+",
+        "tip": "Strong communication and a PMP or Agile certification will drastically increase your hireability."
+    },
+    "marketing & digital marketing": {
+        "roles": [
+            "Digital Marketing Specialist",
+            "SEO Analyst",
+            "Content Marketing Manager",
+            "Growth Hacker"
+        ],
+        "avg_salary": "$60k - $100k+",
+        "tip": "Data is the new marketing. Get Google Analytics certified and learn how to track ROI."
+    },
+    "finance & accounting": {
+        "roles": [
+            "Financial Analyst",
+            "Accountant",
+            "Investment Banker",
+            "Auditor"
+        ],
+        "avg_salary": "$70k - $120k+",
+        "tip": "Advanced Excel skills are mandatory. Consider working toward a CPA or CFA designation."
+    },
+    "design & creative": {
+        "roles": [
+            "UI/UX Designer",
+            "Graphic Designer",
+            "Product Designer",
+            "Art Director"
+        ],
+        "avg_salary": "$65k - $115k+",
+        "tip": "Your portfolio is your resume. Focus on showing your design process, not just the final product."
+    },
+    "healthcare & medicine": {
+        "roles": [
+            "Healthcare Administrator",
+            "Medical Assistant",
+            "Public Health Analyst",
+            "Clinical Researcher"
+        ],
+        "avg_salary": "$60k - $110k+",
+        "tip": "Gain practical clinical hours or internships; theoretical knowledge isn't enough in healthcare."
+    },
+    "engineering": {
+        "roles": [
+            "Mechanical Engineer",
+            "Civil Engineer",
+            "Electrical Engineer",
+            "Robotics Engineer"
+        ],
+        "avg_salary": "$80k - $120k+",
+        "tip": "Master CAD software and try to secure a co-op or internship while studying."
+    },
+    "science": {
+        "roles": [
+            "Research Scientist",
+            "Laboratory Technician",
+            "Environmental Scientist",
+            "Chemist"
+        ],
+        "avg_salary": "$60k - $100k+",
+        "tip": "A Master's degree or PhD is often required for advancement into senior research roles."
+    },
+    "mathematics": {
+        "roles": [
+            "Data Scientist",
+            "Actuary",
+            "Quantitative Analyst (Quant)",
+            "Statistician"
+        ],
+        "avg_salary": "$85k - $140k+",
+        "tip": "Pair your pure math skills with programming (Python/R) to unlock the highest paying roles."
+    },
+    "language learning": {
+        "roles": [
+            "Translator",
+            "Interpreter",
+            "ESL Teacher",
+            "Localization Specialist"
+        ],
+        "avg_salary": "$50k - $80k+",
+        "tip": "Immersion is key. Combine your language skills with another domain (like business or tech) for a unique edge."
+    },
+    "education & teaching": {
+        "roles": [
+            "Teacher",
+            "Instructional Designer",
+            "Education Administrator",
+            "Corporate Trainer"
+        ],
+        "avg_salary": "$55k - $85k+",
+        "tip": "Instructional design is booming; learn e-learning authoring tools like Articulate or Captivate."
+    },
+    "arts & humanities": {
+        "roles": [
+            "Copywriter",
+            "Editor",
+            "Museum Curator",
+            "Archivist"
+        ],
+        "avg_salary": "$45k - $75k+",
+        "tip": "Build a robust writing portfolio and network aggressively in your local arts community."
+    },
+    "psychology": {
+        "roles": [
+            "Clinical Psychologist",
+            "HR Specialist",
+            "Counselor",
+            "UX Researcher"
+        ],
+        "avg_salary": "$60k - $100k+",
+        "tip": "If you don't want to pursue clinical grad school, pivot your psychology degree into HR or UX Research."
+    },
+    "law": {
+        "roles": [
+            "Paralegal",
+            "Corporate Lawyer",
+            "Legal Assistant",
+            "Compliance Officer"
+        ],
+        "avg_salary": "$65k - $130k+",
+        "tip": "High grades and the prestige of your law school matter heavily for top-tier corporate firms."
+    },
+    "architecture & urban planning": {
+        "roles": [
+            "Architect",
+            "Urban Planner",
+            "Landscape Architect",
+            "Interior Designer"
+        ],
+        "avg_salary": "$70k - $105k+",
+        "tip": "Master AutoCAD, Revit, and 3D rendering software early in your career."
+    },
+    "agriculture & environment": {
+        "roles": [
+            "Environmental Consultant",
+            "Agronomist",
+            "Sustainability Specialist",
+            "Conservation Scientist"
+        ],
+        "avg_salary": "$60k - $90k+",
+        "tip": "Corporate sustainability (ESG) is a rapidly growing field; combine environmental science with business."
+    },
+    "sports & fitness": {
+        "roles": [
+            "Personal Trainer",
+            "Athletic Trainer",
+            "Sports Manager",
+            "Nutritionist"
+        ],
+        "avg_salary": "$45k - $80k+",
+        "tip": "Get certified by reputable organizations (e.g., NASM, ACE) and build a strong social media presence."
+    },
+    "culinary arts & hospitality": {
+        "roles": [
+            "Executive Chef",
+            "Hotel Manager",
+            "Event Planner",
+            "Food & Beverage Director"
+        ],
+        "avg_salary": "$50k - $90k+",
+        "tip": "This industry is all about experience. Start from the bottom and work your way up to management."
+    },
+    "python": {
+        "roles": [
+            "Python Developer",
+            "Data Analyst",
+            "Backend Engineer",
+            "Automation Engineer"
+        ],
+        "avg_salary": "$90k - $135k+",
+        "tip": "Don't just learn syntax—learn frameworks like Django/Flask for web or Pandas for data."
+    },
+    "java": {
+        "roles": [
+            "Java Developer",
+            "Backend Engineer",
+            "Enterprise Software Engineer",
+            "Android Developer"
+        ],
+        "avg_salary": "$95k - $140k+",
+        "tip": "Master the Spring Boot framework; it's the industry standard for enterprise Java development."
+    }
+}
