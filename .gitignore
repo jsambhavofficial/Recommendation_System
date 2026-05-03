@@ -1,5 +1,3 @@
-__pycache__/
-*.pyc
 .env
-.ipynb_checkpoints/
-*.log
+coursebot.db
+__pycache__/
