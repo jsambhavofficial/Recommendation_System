@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CourseBot AI — Smart Course Recommendations</title>
+    <title>CourseBot AI — Smart Course & Career Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         *,
         *::before,
@@ -640,6 +641,16 @@
         }
 
         /* Responsive handled in course-card block above */
+
+        /* ── Markdown chat responses ── */
+        .msg-text p { margin: 0 0 10px; }
+        .msg-text p:last-child { margin-bottom: 0; }
+        .msg-text ul, .msg-text ol { margin: 6px 0 10px 18px; padding: 0; }
+        .msg-text li { margin-bottom: 4px; }
+        .msg-text strong { color: var(--text-primary); font-weight: 600; }
+        .msg-text em { color: var(--brand); font-style: italic; }
+        .msg-text code { background: rgba(255,255,255,.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+        .msg-text a { color: var(--brand); text-decoration: underline; }
     </style>
 </head>
 
@@ -683,6 +694,14 @@
         <div class="sidebar-footer">
             <div class="user-avatar" id="avatarEl">U</div>
             <span class="user-name" id="userNameEl">User</span>
+            <div style="margin-left:auto; display:flex; gap:6px;">
+                <button onclick="deleteAllHistory()" title="Delete all chats" style="background:none; border:none; color:var(--text-dim); cursor:pointer; padding:6px; border-radius:6px; transition:color 0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--text-dim)'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+                <button onclick="handleLogout()" title="Logout" style="background:none; border:none; color:var(--text-dim); cursor:pointer; padding:6px; border-radius:6px; transition:color 0.2s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--text-dim)'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                </button>
+            </div>
         </div>
     </aside>
 
@@ -702,8 +721,8 @@
                     </div>
                     <div class="welcome-title">Your Career & Course Assistant</div>
                     <div class="welcome-sub">
-                        I'm <strong>CourseBot AI</strong> — I help you discover the right courses and plan your career
-                        path. Ask me about courses, career roles, learning roadmaps, or certifications!
+                        I'm <strong>CourseBot AI</strong> — I help you discover the right courses, plan your career
+                        path, and give personalized career counselling. Ask me anything!
                     </div>
                     <div class="suggestions">
                         <button class="suggestion-card"
@@ -712,16 +731,20 @@
                             Beginner Data Science courses
                         </button>
                         <button class="suggestion-card"
-                            onclick="useSuggestion('What career options are there in Machine Learning?')">
-                            <span class="icon">🎯</span>
-                            Career options in Machine Learning
+                            onclick="useSuggestion('I am confused about my career, help me choose')">
+                            <span class="icon">🧭</span>
+                            Help me choose a career
                         </button>
                         <button class="suggestion-card"
-                            onclick="useSuggestion('Give me a Web Development learning roadmap')">
-                            <span class="icon">🗺️</span>
-                            Web Development roadmap
+                            onclick="useSuggestion('What are the career options and salary in AI?')">
+                            <span class="icon">💼</span>
+                            Career options & salary in AI
                         </button>
-
+                        <button class="suggestion-card"
+                            onclick="useSuggestion('I like math and solving problems, what should I study?')">
+                            <span class="icon">🎯</span>
+                            What should I study?
+                        </button>
                     </div>
                 </div>
 
@@ -752,32 +775,101 @@
         const area = document.getElementById('messageArea');
         const container = document.getElementById('msgContainer');
 
-        // ── localStorage username ──
-        const storedName = localStorage.getItem('cb_username') || 'User';
-        document.getElementById('userNameEl').textContent = storedName;
-        const av = document.getElementById('avatarEl');
-        av.textContent = storedName.charAt(0).toUpperCase();
+        // ── Session management ──
+        let geminiSessionId = 'session_' + Date.now();
+        let currentChatSessionId = null;
 
-        // ── Real chat history ──
-        function loadRecentChats() {
-            const history = JSON.parse(localStorage.getItem('cb_history') || '[]');
-            const el = document.getElementById('recentChats');
-            el.innerHTML = '';
-            history.slice(-8).reverse().forEach((q, i) => {
-                const div = document.createElement('div');
-                div.className = 'sidebar-item' + (i === 0 ? ' active' : '');
-                div.textContent = q;
-                div.onclick = () => useSuggestion(q);
-                el.appendChild(div);
-            });
+        // ── Load user info from server ──
+        async function loadUser() {
+            try {
+                const res = await fetch('/api/user');
+                const data = await res.json();
+                if (data.logged_in) {
+                    document.getElementById('userNameEl').textContent = data.user.username;
+                    document.getElementById('avatarEl').textContent = data.user.username.charAt(0).toUpperCase();
+                }
+            } catch (e) {}
         }
-        function saveToHistory(query) {
-            const history = JSON.parse(localStorage.getItem('cb_history') || '[]');
-            if (!history.includes(query)) { history.push(query); if (history.length > 20) history.shift(); }
-            localStorage.setItem('cb_history', JSON.stringify(history));
-            loadRecentChats();
+        loadUser();
+
+        // ── DB-backed chat history ──
+        async function loadRecentChats() {
+            try {
+                const res = await fetch('/api/sessions');
+                const sessions = await res.json();
+                const el = document.getElementById('recentChats');
+                el.innerHTML = '';
+                sessions.forEach((s, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'sidebar-item' + (currentChatSessionId === s.id ? ' active' : '');
+                    div.textContent = s.title;
+                    div.onclick = () => loadChatSession(s.id);
+                    el.appendChild(div);
+                });
+            } catch (e) {}
         }
         loadRecentChats();
+
+        async function createChatSession(title) {
+            try {
+                const res = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                });
+                const data = await res.json();
+                currentChatSessionId = data.session_id;
+                loadRecentChats();
+                return data.session_id;
+            } catch (e) { return null; }
+        }
+
+        async function loadChatSession(sessionId) {
+            currentChatSessionId = sessionId;
+            geminiSessionId = 'session_' + sessionId;
+
+            // Clear UI
+            container.innerHTML = '';
+            if (welcome) welcome.style.display = 'none';
+
+            // Load messages from DB
+            try {
+                const res = await fetch(`/api/sessions/${sessionId}/messages`);
+                const messages = await res.json();
+                messages.forEach(m => {
+                    if (m.msg_type === 'chat' || m.msg_type === 'greeting') {
+                        if (m.role === 'bot') {
+                            const rendered = (typeof marked !== 'undefined') ? marked.parse(m.content) : m.content;
+                            appendMsg(rendered, 'bot');
+                        } else {
+                            appendMsg(m.content, 'user');
+                        }
+                    } else if (m.role === 'user') {
+                        appendMsg(m.content, 'user');
+                    }
+                });
+            } catch (e) {}
+            loadRecentChats();
+        }
+
+        async function deleteAllHistory() {
+            if (!confirm('Delete all chat history? This cannot be undone.')) return;
+            try {
+                await fetch('/api/sessions/all', { method: 'DELETE' });
+                currentChatSessionId = null;
+                newChat();
+                loadRecentChats();
+            } catch (e) {}
+        }
+
+        async function handleLogout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (e) {
+                window.location.href = '/';
+            }
+        }
 
         // ── Follow-up suggestions per domain ──
         const domainFollowUps = {
@@ -864,9 +956,19 @@
         }
 
         function newChat() {
+            // Clear Gemini conversation history
+            fetch('/clear_session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: geminiSessionId })
+            }).catch(() => {});
+            geminiSessionId = 'session_' + Date.now();
+            currentChatSessionId = null;
+
             container.innerHTML = '';
             container.appendChild(welcome);
             welcome.style.display = 'flex';
+            loadRecentChats();
         }
 
         async function sendMsg() {
@@ -876,9 +978,13 @@
             // Hide welcome screen
             if (welcome) welcome.style.display = 'none';
 
+            // Create DB session on first message
+            if (!currentChatSessionId) {
+                await createChatSession(txt.substring(0, 60));
+            }
+
             // Show user message
             appendMsg(txt, 'user');
-            saveToHistory(txt);
             input.value = '';
             toggleSend();
 
@@ -886,10 +992,10 @@
             const typingId = showTyping();
 
             try {
-                const response = await fetch('/recommend', {
+                const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: txt })
+                    body: JSON.stringify({ query: txt, session_id: geminiSessionId, chat_session_id: currentChatSessionId })
                 });
 
                 const data = await response.json();
@@ -897,6 +1003,11 @@
 
                 if (data.status === 'greeting' || data.status === 'off_topic') {
                     appendMsg(data.message, 'bot');
+
+                } else if (data.status === 'chat') {
+                    // Gemini conversational response - render as markdown
+                    const rendered = marked.parse(data.message || '');
+                    appendMsg(rendered, 'bot');
 
                 } else if (data.status === 'multi_domain') {
                     // Multi-domain: show both paths separately + compare button
