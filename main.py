@@ -15,7 +15,7 @@ with open(os.path.join(_dir, 'career_guidance.json'), 'r', encoding='utf-8') as 
 
 
 # LOAD & CLEAN DATA
-df = pd.read_csv(os.path.join(_dir, "course_recommendation_dataset.csv"))
+df = pd.read_csv("course_recommendation_dataset.csv")
 
 df['Course_Name'] = df['course_name'].fillna('').str.lower()
 df['Domain'] = df['course_domain'].fillna('').str.lower()
@@ -37,7 +37,7 @@ df['text'] = (
 vectorizer = TfidfVectorizer(
     ngram_range=(1,2),   # BEST BALANCE (Unigram + Bigram)
     stop_words='english',
-    max_features=500
+    max_features=1500
 )
 
 X = vectorizer.fit_transform(df['text'])
@@ -171,7 +171,7 @@ def recommend_courses(user_query):
     # GIBBERISH DETECTION
     if query_vec.nnz == 0 and not detected_skills:
         print("\n[!] I could not understand your query. Please try different keywords.")
-        return {}
+        return {}, {}
 
     # Step 3: detect domains (ML Prediction)
     domains = detect_domains(query_vec)
