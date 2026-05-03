@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CourseBot AI — Smart Course Recommendations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --brand: #10a37f;
+            --brand-hover: #0d8a6b;
+            --sidebar-bg: #171717;
+            --sidebar-hover: #2a2a2a;
+            --main-bg: #212121;
+            --msg-user-bg: #2f2f2f;
+            --msg-bot-bg: transparent;
+            --text-primary: #ececec;
+            --text-secondary: #b4b4b4;
+            --text-dim: #888;
+            --border-color: #383838;
+            --input-bg: #2f2f2f;
+            --input-border: #424242;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--main-bg);
+            height: 100vh;
+            display: flex;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-logo {
+            width: 28px;
+            height: 28px;
+            background: var(--brand);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-brand {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .new-chat-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background .2s;
+            margin-bottom: 16px;
+        }
+
+        .new-chat-btn:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .new-chat-btn svg {
+            width: 16px;
+            height: 16px;
+            opacity: .7;
+        }
+
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 14px 6px;
+        }
+
+        .sidebar-item {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background .15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-item:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .sidebar-item.active {
+            background: var(--sidebar-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 14px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: #5436DA;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ── MAIN AREA ── */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── MESSAGES ── */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            scrollbar-width: thin;
+            scrollbar-color: #444 transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px;
+        }
+
+        .message-container {
+            width: 100%;
+            max-width: 768px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── WELCOME SCREEN ── */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .welcome-logo {
+            width: 56px;
+            height: 56px;
+            background: var(--brand);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .welcome-logo svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ececec 0%, #b4b4b4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-sub {
+            font-size: 15px;
+            color: var(--text-dim);
+            max-width: 500px;
+            line-height: 1.6;
+            margin-bottom: 36px;
+        }
+
+        .suggestions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 580px;
+            width: 100%;
+        }
+
+        .suggestion-card {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.5;
+            cursor: pointer;
+            text-align: left;
+            transition: background .2s, border-color .2s;
+        }
+
+        .suggestion-card:hover {
+            background: var(--sidebar-hover);
+            border-color: #555;
+        }
+
+        .suggestion-card .icon {
+            font-size: 18px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* ── MSG ROW ── */
+        .msg-row {
+            display: flex;
+            gap: 16px;
+            padding: 24px 0;
+            width: 100%;
+            animation: fadeMsg .4s ease both;
+        }
+
+        .msg-row+.msg-row {
+            border-top: 1px solid rgba(255, 255, 255, .04);
+        }
+
+        @keyframes fadeMsg {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .msg-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .msg-avatar.bot-av {
+            background: var(--brand);
+        }
+
+        .msg-avatar.user-av {
+            background: #5436DA;
+        }
+
+        .msg-avatar svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .msg-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .msg-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            word-break: break-word;
+        }
+
+        .msg-text b,
+        .msg-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* ── Typing indicator ── */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-dim);
+            border-radius: 50%;
+            animation: blink 1.4s infinite both;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes blink {
+
+            0%,
+            80%,
+            100% {
+                opacity: .3;
+                transform: scale(.8);
+            }
+
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ── Course cards ── */
+        .course-card {
+            padding: 14px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: border-color .2s, background .2s;
+        }
+
+        .course-card:hover {
+            border-color: #555;
+            background: rgba(255, 255, 255, .02);
+        }
+
+        .course-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .course-meta {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+
+        .badge-coursera {
+            background: rgba(0, 86, 210, .25);
+            color: #4d9fff;
+        }
+
+        .badge-udemy {
+            background: rgba(168, 56, 229, .25);
+            color: #c084fc;
+        }
+
+        .badge-edx {
+            background: rgba(2, 145, 139, .25);
+            color: #34d399;
+        }
+
+        .badge-free {
+            background: rgba(16, 163, 127, .2);
+            color: #10a37f;
+        }
+
+        .badge-paid {
+            background: rgba(255, 180, 0, .15);
+            color: #fbbf24;
+        }
+
+        .learning-path-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .lp-tag {
+            background: rgba(16, 163, 127, .15);
+            color: var(--brand);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── Follow-up suggestions ── */
+        .followup-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .followup-chip {
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+        }
+
+        .followup-chip:hover {
+            background: var(--sidebar-hover);
+            border-color: #555;
+        }
+
+        /* ── Mobile hamburger ── */
+        .hamburger {
+            display: none;
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 100;
+            background: var(--sidebar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .hamburger svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            z-index: 50;
+        }
+
+        @media (max-width:768px) {
+            .sidebar {
+                position: fixed;
+                left: -270px;
+                top: 0;
+                height: 100%;
+                z-index: 60;
+                transition: left .25s;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .suggestions {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-title {
+                font-size: 22px;
+            }
+
+            .main-area {
+                padding-left: 0;
+            }
+        }
+
+        /* ── INPUT ── */
+        .chat-input-wrapper {
+            padding: 0 24px 28px;
+        }
+
+        .chat-input {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
+        .input-box {
+            display: flex;
+            align-items: flex-end;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 16px;
+            padding: 6px 8px 6px 18px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .input-box:focus-within {
+            border-color: #666;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, .05);
+        }
+
+        .input-field {
+            flex: 1;
+            border: none;
+            padding: 12px 0;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text-primary);
+            outline: none;
+            background: transparent;
+            resize: none;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-dim);
+        }
+
+        .send-btn {
+            width: 34px;
+            height: 34px;
+            background: var(--brand);
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s, opacity .2s;
+            flex-shrink: 0;
+            opacity: .6;
+        }
+
+        .send-btn:hover {
+            background: var(--brand-hover);
+            opacity: 1;
+        }
+
+        .send-btn.active {
+            opacity: 1;
+        }
+
+        .send-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 10px;
+        }
+
+        /* Responsive handled in course-card block above */
+    </style>
+</head>
+
+<body>
+    <!-- Mobile hamburger -->
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+    </button>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                </svg>
+            </div>
+            <span class="sidebar-brand">CourseBot AI</span>
+        </div>
+
+        <button class="new-chat-btn" onclick="newChat()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New chat
+        </button>
+
+
+
+        <div class="sidebar-section-title">Recent</div>
+        <div id="recentChats"></div>
+
+        <div class="sidebar-footer">
+            <div class="user-avatar" id="avatarEl">U</div>
+            <span class="user-name" id="userNameEl">User</span>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-area">
+        <div class="chat-messages" id="messageArea">
+            <div class="message-container" id="msgContainer">
+
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-logo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5" />
+                            <path d="M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <div class="welcome-title">Your Career & Course Assistant</div>
+                    <div class="welcome-sub">
+                        I'm <strong>CourseBot AI</strong> — I help you discover the right courses and plan your career
+                        path. Ask me about courses, career roles, learning roadmaps, or certifications!
+                    </div>
+                    <div class="suggestions">
+                        <button class="suggestion-card"
+                            onclick="useSuggestion('Recommend beginner Data Science courses')">
+                            <span class="icon">📊</span>
+                            Beginner Data Science courses
+                        </button>
+                        <button class="suggestion-card"
+                            onclick="useSuggestion('What career options are there in Machine Learning?')">
+                            <span class="icon">🎯</span>
+                            Career options in Machine Learning
+                        </button>
+                        <button class="suggestion-card"
+                            onclick="useSuggestion('Give me a Web Development learning roadmap')">
+                            <span class="icon">🗺️</span>
+                            Web Development roadmap
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="chat-input-wrapper">
+            <div class="chat-input">
+                <div class="input-box">
+                    <input class="input-field" id="msgInput" type="text" placeholder="Message CourseBot AI..."
+                        autocomplete="off" onkeydown="handleKey(event)" oninput="toggleSend()" />
+                    <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <line x1="12" y1="19" x2="12" y2="5" />
+                            <polyline points="5 12 12 5 19 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="disclaimer">CourseBot AI may produce inaccurate results. Verify course details on the
+                    provider's website.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const area = document.getElementById('messageArea');
+        const container = document.getElementById('msgContainer');
+
+        // ── localStorage username ──
+        const storedName = localStorage.getItem('cb_username') || 'User';
+        document.getElementById('userNameEl').textContent = storedName;
+        const av = document.getElementById('avatarEl');
+        av.textContent = storedName.charAt(0).toUpperCase();
+
+        // ── Real chat history ──
+        function loadRecentChats() {
+            const history = JSON.parse(localStorage.getItem('cb_history') || '[]');
+            const el = document.getElementById('recentChats');
+            el.innerHTML = '';
+            history.slice(-8).reverse().forEach((q, i) => {
+                const div = document.createElement('div');
+                div.className = 'sidebar-item' + (i === 0 ? ' active' : '');
+                div.textContent = q;
+                div.onclick = () => useSuggestion(q);
+                el.appendChild(div);
+            });
+        }
+        function saveToHistory(query) {
+            const history = JSON.parse(localStorage.getItem('cb_history') || '[]');
+            if (!history.includes(query)) { history.push(query); if (history.length > 20) history.shift(); }
+            localStorage.setItem('cb_history', JSON.stringify(history));
+            loadRecentChats();
+        }
+        loadRecentChats();
+
+        // ── Follow-up suggestions per domain ──
+        const domainFollowUps = {
+            'PROGRAMMING': ['Beginner Python courses', 'Advanced Java', 'Python with certificate'],
+            'ML': ['Deep learning courses', 'Machine learning for beginners', 'TensorFlow tutorials'],
+            'DATA SCIENCE': ['Data science with Python', 'SQL for data analysts', 'Data visualization courses'],
+            'WEB DEVELOPMENT': ['React JS courses', 'Full stack web dev', 'JavaScript beginner courses'],
+            'BUSINESS FINANCE': ['Financial modeling courses', 'Excel for business', 'Investment banking basics'],
+            'GRAPHIC DESIGN': ['Figma UI design courses', 'Photoshop beginner', 'Logo design courses'],
+            'MUSICAL INSTRUMENTS': ['Guitar for beginners', 'Piano lessons', 'Music theory basics']
+        };
+        function getFollowUpSuggestions(domain) {
+            return domainFollowUps[domain] || [];
+        }
+
+        // ── Mobile sidebar ──
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+        const input = document.getElementById('msgInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const welcome = document.getElementById('welcomeScreen');
+
+        function renderPathBlock(queryLabel, pathData, accentColor) {
+            let html = `<div style="border-left:3px solid ${accentColor}; padding-left:16px; margin-bottom:10px;">`;
+            html += `<div style="font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:10px;">${queryLabel.toUpperCase()} — ${pathData.domain}</div>`;
+
+            if (pathData.guidance) {
+                if (pathData.guidance.roles) {
+                    html += `<div style="margin-bottom:6px; font-size:13px; color:var(--text-dim);">Roles:</div>`;
+                    html += `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">`;
+                    pathData.guidance.roles.forEach(r => { html += `<span class="lp-tag">${r}</span>`; });
+                    html += `</div>`;
+                }
+                if (pathData.guidance.avg_salary) {
+                    html += `<div style="font-size:13px; margin-bottom:4px;"><strong>💰 Salary:</strong> ${pathData.guidance.avg_salary}</div>`;
+                }
+                if (pathData.guidance.tip) {
+                    html += `<div style="font-size:13px; margin-bottom:10px;"><strong>💡 Tip:</strong> ${pathData.guidance.tip}</div>`;
+                }
+            }
+
+            if (pathData.recommendations && pathData.recommendations.length > 0) {
+                html += `<div style="font-size:13px; font-weight:600; margin-bottom:6px;">📚 Top Courses:</div>`;
+                pathData.recommendations.slice(0, 3).forEach(c => {
+                    html += `<div class="course-card">
+          <div class="course-title">${c.Course_Name || 'Untitled'}</div>
+          <div class="course-meta">⭐ ${c.Rating || 'N/A'} • ${c.Organization || 'Unknown'} • ${c.Level || 'All Levels'}</div>
+        </div>`;
+                });
+            }
+
+            if (pathData.learning_path && Object.keys(pathData.learning_path).length > 0) {
+                html += `<div style="font-size:13px; font-weight:600; margin:10px 0 6px;">🗺️ Learning Path:</div>`;
+                html += `<div class="learning-path-tags">`;
+                let s = 1;
+                for (const skill in pathData.learning_path) {
+                    html += `<span class="lp-tag">${s}. ${skill.toUpperCase()}</span>`;
+                    s++;
+                }
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+            return html;
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMsg();
+            }
+        }
+
+        function toggleSend() {
+            sendBtn.classList.toggle('active', input.value.trim().length > 0);
+        }
+
+        function useSuggestion(text) {
+            input.value = text;
+            toggleSend();
+            sendMsg();
+        }
+
+        function newChat() {
+            container.innerHTML = '';
+            container.appendChild(welcome);
+            welcome.style.display = 'flex';
+        }
+
+        async function sendMsg() {
+            const txt = input.value.trim();
+            if (!txt) return;
+
+            // Hide welcome screen
+            if (welcome) welcome.style.display = 'none';
+
+            // Show user message
+            appendMsg(txt, 'user');
+            saveToHistory(txt);
+            input.value = '';
+            toggleSend();
+
+            // Show typing indicator
+            const typingId = showTyping();
+
+            try {
+                const response = await fetch('/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: txt })
+                });
+
+                const data = await response.json();
+                removeTyping(typingId);
+
+                if (data.status === 'greeting' || data.status === 'off_topic') {
+                    appendMsg(data.message, 'bot');
+
+                } else if (data.status === 'multi_domain') {
+                    // Multi-domain: show both paths separately + compare button
+                    let html = `<div style="margin-bottom:16px; font-size:16px;"><strong>🔄 Comparing Two Paths</strong></div>`;
+
+                    // Path A
+                    html += renderPathBlock(data.query_a, data.path_a, '#10a37f');
+                    // divider
+                    html += `<div style="border-top:1px solid var(--border-color); margin:20px 0;"></div>`;
+                    // Path B
+                    html += renderPathBlock(data.query_b, data.path_b, '#5436DA');
+
+
+
+                    appendMsg(html, 'bot');
+
+                } else if (data.status === 'career') {
+                    // Career guidance response
+                    let html = `<div style="margin-bottom:16px; font-size:16px;"><strong>🎯 Career Guidance: ${data.domain}</strong></div>`;
+
+                    if (data.guidance) {
+                        html += `<div class="course-card" style="border-left:3px solid var(--brand); margin-bottom:16px;">`;
+                        if (data.guidance.roles) {
+                            html += `<div style="margin-bottom:8px;"><strong>Roles you can pursue:</strong></div>`;
+                            html += `<div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">`;
+                            data.guidance.roles.forEach(role => {
+                                html += `<span class="lp-tag">${role}</span>`;
+                            });
+                            html += `</div>`;
+                        }
+                        if (data.guidance.avg_salary) {
+                            html += `<div style="margin-bottom:8px;"><strong>💰 Avg Salary Range:</strong> ${data.guidance.avg_salary}</div>`;
+                        }
+                        if (data.guidance.tip) {
+                            html += `<div><strong>💡 Pro Tip:</strong> ${data.guidance.tip}</div>`;
+                        }
+                        html += `</div>`;
+                    }
+
+                    if (data.recommendations && data.recommendations.length > 0) {
+                        html += `<div style="margin-bottom:8px;font-weight:600;">📚 Recommended Courses to Get Started:</div>`;
+                        data.recommendations.forEach(course => {
+                            const platformClass = { 'Coursera': 'badge-coursera', 'Udemy': 'badge-udemy', 'EdX': 'badge-edx' }[course.Platform] || '';
+                            const platformBadge = course.Platform ? `<span class="platform-badge ${platformClass}">${course.Platform}</span>` : '';
+                            html += `<div class="course-card">
+              <div class="course-title">${course.Course_Name || 'Untitled Course'}</div>
+              <div class="course-meta">⭐ ${course.Rating || 'N/A'} ${platformBadge} <span>${course.Organization || ''}</span> <span>${course.Level || 'All Levels'}</span></div>
+            </div>`;
+                        });
+                    }
+
+                    if (data.learning_path && Object.keys(data.learning_path).length > 0) {
+                        html += `<div style="margin-top:16px;font-weight:600;margin-bottom:8px;">🗺️ Learning Roadmap:</div>`;
+                        html += `<div class="learning-path-tags">`;
+                        let step = 1;
+                        for (const skill in data.learning_path) {
+                            html += `<span class="lp-tag">${step}. ${skill.toUpperCase()}</span>`;
+                            step++;
+                        }
+                        html += `</div>`;
+                    }
+
+                    appendMsg(html, 'bot');
+
+                } else if (data.status === 'success') {
+                    const domainLabel = data.domain || '';
+                    const total = data.total_courses ? `<span style="font-size:12px;color:var(--text-dim);margin-left:8px;">(${data.total_courses} courses available)</span>` : '';
+                    let html = `<div style="margin-bottom:14px;font-size:16px;"><strong>📚 Courses in ${domainLabel}</strong>${total}</div>`;
+
+                    if (data.recommendations && data.recommendations.length > 0) {
+                        data.recommendations.forEach(course => {
+                            const platformClass = { 'Coursera': 'badge-coursera', 'Udemy': 'badge-udemy', 'EdX': 'badge-edx' }[course.Platform] || '';
+                            const platformBadge = course.Platform ? `<span class="platform-badge ${platformClass}">${course.Platform}</span>` : '';
+                            const isFree = (course.Type || '').toLowerCase().includes('free');
+                            const typeBadge = isFree
+                                ? `<span class="platform-badge badge-free">Free</span>`
+                                : `<span class="platform-badge badge-paid">Paid</span>`;
+                            html += `<div class="course-card">
+              <div class="course-title">${course.Course_Name || 'Untitled Course'}</div>
+              <div class="course-meta">
+                ⭐ ${course.Rating || 'N/A'}
+                ${platformBadge} ${typeBadge}
+                <span>${course.Organization || ''}</span>
+                <span>${course.Level || 'All Levels'}</span>
+              </div>
+            </div>`;
+                        });
+                    }
+
+                    if (data.learning_path && Object.keys(data.learning_path).length > 0) {
+                        html += `<div style="margin-top:16px;font-weight:600;margin-bottom:8px;">🗺️ Suggested Learning Path:</div>`;
+                        html += `<div class="learning-path-tags">`;
+                        let step = 1;
+                        for (const skill in data.learning_path) {
+                            html += `<span class="lp-tag">${step}. ${skill.toUpperCase()}</span>`;
+                            step++;
+                        }
+                        html += `</div>`;
+                    }
+
+                    // Follow-up suggestion chips
+                    const suggestions = getFollowUpSuggestions(domainLabel);
+                    if (suggestions.length) {
+                        html += `<div class="followup-chips">`;
+                        suggestions.forEach(s => { html += `<button class="followup-chip" onclick="useSuggestion('${s}')">${s}</button>`; });
+                        html += `</div>`;
+                    }
+
+                    appendMsg(html, 'bot');
+                } else {
+                    appendMsg("Something went wrong. Please try a different query.", 'bot');
+                }
+            } catch (err) {
+                removeTyping(typingId);
+                appendMsg("⚠️ Could not reach the server. Make sure the backend is running on <code>http://127.0.0.1:5000</code>.", 'bot');
+            }
+        }
+
+        function showTyping() {
+            const id = 'typing-' + Date.now();
+            const row = document.createElement('div');
+            row.className = 'msg-row';
+            row.id = id;
+            row.innerHTML = `
+      <div class="msg-avatar bot-av">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="msg-body">
+        <div class="msg-name">CourseBot AI</div>
+        <div class="typing-indicator"><span></span><span></span><span></span></div>
+      </div>
+    `;
+            container.appendChild(row);
+            area.scrollTop = area.scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function appendMsg(text, type) {
+            const isUser = type === 'user';
+
+            const row = document.createElement('div');
+            row.className = 'msg-row';
+
+            const botSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`;
+            const userSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+
+            row.innerHTML = `
+      <div class="msg-avatar ${isUser ? 'user-av' : 'bot-av'}">${isUser ? userSvg : botSvg}</div>
+      <div class="msg-body">
+        <div class="msg-name">${isUser ? 'You' : 'CourseBot AI'}</div>
+        <div class="msg-text">${text}</div>
+      </div>
+    `;
+            container.appendChild(row);
+            area.scrollTop = area.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>
