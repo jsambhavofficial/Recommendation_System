@@ -40,7 +40,7 @@ This project is configured for Vercel's Python serverless runtime.
 GEMINI_API_KEY=your_api_key_here
 SECRET_KEY=use_a_long_random_secret
 ```
-4. Deploy. Vercel will use `vercel.json` and `requirements.txt`.
+4. Deploy. Vercel will use the Flask preset from `vercel.json`, Python `3.12` from `.python-version`, and dependencies from `requirements.txt`.
 
 Note: SQLite on Vercel is temporary because serverless storage is ephemeral. Login and chat history may reset between function instances. For production persistence, use an external database such as Neon Postgres, Supabase, or Turso.
 

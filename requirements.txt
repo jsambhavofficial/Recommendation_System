@@ -1,7 +1,7 @@
-flask
-pandas
-numpy
-scikit-learn
-pyspellchecker
-python-dotenv
-google-genai
+flask>=3.0,<4
+pandas>=2.2,<3
+numpy>=1.26,<3
+scikit-learn>=1.5,<2
+pyspellchecker>=0.8,<1
+python-dotenv>=1.0,<2
+google-genai>=1.0,<2
