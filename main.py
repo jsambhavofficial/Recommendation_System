@@ -35,7 +35,7 @@ df['text'] = (
 
 # TRAIN MODEL
 vectorizer = TfidfVectorizer(
-    ngram_range=(1,2),   # BEST BALANCE (Unigram + Bigram)
+    ngram_range=(1,1),
     stop_words='english',
     max_features=1500
 )
